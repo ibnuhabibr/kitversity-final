@@ -56,7 +56,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [customerInfo, setCustomerInfo] = useState({ name: '', email: '', phone: '', address: '' });
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('qris'); // Default ke QRIS
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>('qris');
   const [shippingMethod, setShippingMethod] = useState<ShippingMethod>('cod');
 
   useEffect(() => {
@@ -87,13 +87,24 @@ export default function CheckoutPage() {
         setIsLoading(false);
         return;
     }
+
+    // --- PERUBAHAN DI SINI: Membersihkan data item sebelum dikirim ---
+    const itemsForAPI = checkoutItems.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+        selectedVariants: item.selectedVariants || {},
+    }));
+    // --- AKHIR PERUBAHAN ---
     
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          items: checkoutItems, 
+          items: itemsForAPI, // <-- Gunakan data yang sudah bersih
           customerInfo: {
             name: customerInfo.name,
             email: customerInfo.email,
@@ -155,7 +166,6 @@ export default function CheckoutPage() {
                             </CardContent>
                         </Card>
 
-                        {/* --- BAGIAN METODE PEMBAYARAN DIPERBARUI --- */}
                         <Card className="shadow-md">
                             <CardHeader><CardTitle className="text-xl">3. Metode Pembayaran</CardTitle></CardHeader>
                             <CardContent className="space-y-3">
@@ -165,7 +175,7 @@ export default function CheckoutPage() {
                                     onSelect={() => setPaymentMethod('qris')} 
                                     title="QRIS (Semua E-Wallet & M-Banking)" 
                                     description="Scan dengan GoPay, ShopeePay, DANA, BCA, dll." 
-                                    icon={<Image src="/qris-logo.png" alt="QRIS" width={32} height={32} />} 
+                                    icon={<Image src="/qris.png" alt="QRIS" width={32} height={32} />} 
                                     disabled={false}
                                 />
                                 <OptionCard isSelected={paymentMethod === 'shopeepay'} onSelect={() => setPaymentMethod('shopeepay')} title="ShopeePay" description="Transfer langsung ke sesama ShopeePay" icon={<Image src="/shopeepay.png" alt="ShopeePay" width={32} height={32} />} />
@@ -181,8 +191,6 @@ export default function CheckoutPage() {
                                 <OptionCard isSelected={paymentMethod === 'virtual_account_mandiri'} onSelect={() => setPaymentMethod('virtual_account_mandiri')} title="Mandiri Virtual Account" description="Bayar ke VA ShopeePay" icon={<Image src="/mandiri.png" alt="Mandiri" width={40} height={40} className="object-contain" />} />
                             </CardContent>
                         </Card>
-                         {/* --- AKHIR PERUBAHAN --- */}
-
                         {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
                         <Button type="submit" size="lg" className="w-full text-base font-bold" disabled={isLoading}>
                             {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : 'Lanjut ke Pembayaran'}
