@@ -173,7 +173,7 @@ export default function CheckoutPage() {
                                     onSelect={() => setPaymentMethod('qris')}
                                     title="QRIS (Semua E-Wallet & M-Banking)"
                                     description="Scan dengan GoPay, ShopeePay, DANA, BCA, dll."
-                                    icon={<Image src="/qris.png" alt="QRIS" width={32} height={32} />}
+                                    icon={<Image src="/qris-logo.png" alt="QRIS" width={32} height={32} />}
                                     disabled={false}
                                 />
                                 <OptionCard isSelected={paymentMethod === 'shopeepay'} onSelect={() => setPaymentMethod('shopeepay')} title="ShopeePay" description="Transfer langsung ke sesama ShopeePay" icon={<Image src="/shopeepay.png" alt="ShopeePay" width={32} height={32} />} />
