@@ -1,5 +1,3 @@
-// Lokasi: app/checkout/page.tsx
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -48,10 +46,10 @@ const OptionCard = ({ isSelected, onSelect, title, description, icon, disabled =
 export default function CheckoutPage() {
   const router = useRouter();
   const { state: cartState, clearCart } = useCart();
-  
+
   const [checkoutItems, setCheckoutItems] = useState<CartItem[]>([]);
   const [isBuyNow, setIsBuyNow] = useState(false);
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -98,26 +96,26 @@ export default function CheckoutPage() {
         selectedVariants: item.selectedVariants || {},
     }));
     // --- AKHIR PERUBAHAN ---
-    
+
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           items: itemsForAPI, // <-- Gunakan data yang sudah bersih
           customerInfo: {
             name: customerInfo.name,
             email: customerInfo.email,
             phone: customerInfo.phone,
             address: shippingMethod === 'delivery' ? customerInfo.address : 'COD Kampus UNAIR',
-          }, 
-          paymentMethod 
+          },
+          paymentMethod
         })
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Gagal membuat pesanan');
-      
+
       if (isBuyNow) {
         sessionStorage.removeItem('buyNowItem');
       } else {
@@ -131,11 +129,11 @@ export default function CheckoutPage() {
       setIsLoading(false);
     }
   };
-  
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-12">
@@ -170,17 +168,17 @@ export default function CheckoutPage() {
                             <CardHeader><CardTitle className="text-xl">3. Metode Pembayaran</CardTitle></CardHeader>
                             <CardContent className="space-y-3">
                                 <h4 className="font-semibold text-sm text-gray-600 pt-2">E-Wallet & QRIS</h4>
-                                <OptionCard 
-                                    isSelected={paymentMethod === 'qris'} 
-                                    onSelect={() => setPaymentMethod('qris')} 
-                                    title="QRIS (Semua E-Wallet & M-Banking)" 
-                                    description="Scan dengan GoPay, ShopeePay, DANA, BCA, dll." 
-                                    icon={<Image src="/qris.png" alt="QRIS" width={32} height={32} />} 
+                                <OptionCard
+                                    isSelected={paymentMethod === 'qris'}
+                                    onSelect={() => setPaymentMethod('qris')}
+                                    title="QRIS (Semua E-Wallet & M-Banking)"
+                                    description="Scan dengan GoPay, ShopeePay, DANA, BCA, dll."
+                                    icon={<Image src="/qris.png" alt="QRIS" width={32} height={32} />}
                                     disabled={false}
                                 />
                                 <OptionCard isSelected={paymentMethod === 'shopeepay'} onSelect={() => setPaymentMethod('shopeepay')} title="ShopeePay" description="Transfer langsung ke sesama ShopeePay" icon={<Image src="/shopeepay.png" alt="ShopeePay" width={32} height={32} />} />
                                 <OptionCard isSelected={paymentMethod === 'gopay'} onSelect={() => setPaymentMethod('gopay')} title="GoPay" description="Transfer langsung atau scan QRIS GoPay" icon={<Image src="/gopay.png" alt="GoPay" width={40} height={40} className="object-contain" />} />
-                                
+
                                 <h4 className="font-semibold text-sm text-gray-600 pt-2">Transfer Bank</h4>
                                 <OptionCard isSelected={paymentMethod === 'bank_transfer'} onSelect={() => setPaymentMethod('bank_transfer')} title="BCA (Bank Central Asia)" description="Bisa via M-Banking, ATM, atau E-Wallet" icon={<Image src="/bca.png" alt="BCA" width={40} height={40} className="object-contain" />} />
 
